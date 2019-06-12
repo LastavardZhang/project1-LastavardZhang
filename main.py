@@ -59,7 +59,19 @@ def getLoginRequest():
     
 @app.route('/search')
 def searchBook():
-    return "Searching"
+    db = pymysql.connect("localhost","root","root","TESTDB" )
+    cursor = db.cursor()
+    sql = "select * from books where isbn like '%"+request.args.get('bookinfo')+"%'"
+    csqs = " "
+    try:
+        cursor.execute(sql)
+        results = cursor.fetchall()
+    except:
+        traceback.print_exc()
+        db.rollback()
+    db.close()
+
+    return render_template('searchres.html',u=results) 
 
 #使用__name__ == '__main__'是 Python 的惯用法，确保直接执行此脚本时才
 #启动服务器，若其他程序调用该脚本可能父级程序会启动不同的服务器
